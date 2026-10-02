@@ -1,0 +1,38 @@
+name: Build Android APK and Extract Zip
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Extract Zip File
+      run: |
+        echo "Extracting m-apps.zip..."
+        unzip m-apps.zip -d extracted_project
+        ls -la extracted_project
+
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Build APK
+      run: |
+        cd extracted_project
+        chmod +x gradlew
+        ./gradlew assembleDebug
+
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: napps-telecom-apk
+        path: extracted_project/app/build/outputs/apk/debug/*.apk
+        
