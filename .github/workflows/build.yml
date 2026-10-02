@@ -15,7 +15,8 @@ jobs:
     - name: Extract Zip File
       run: |
         echo "Extracting m-apps.zip..."
-        unzip m-apps.zip -d extracted_project
+        mkdir -p extracted_project
+        unzip -q m-apps.zip -d extracted_project
         ls -la extracted_project
 
     - name: Set up JDK
@@ -27,6 +28,9 @@ jobs:
     - name: Build APK
       run: |
         cd extracted_project
+        PROJECT_DIR=$(find . -name "gradlew" -maxdepth 3 | xargs dirname)
+        echo "Found project directory: $PROJECT_DIR"
+        cd "$PROJECT_DIR"
         chmod +x gradlew
         ./gradlew assembleDebug
 
@@ -34,5 +38,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: napps-telecom-apk
-        path: extracted_project/app/build/outputs/apk/debug/*.apk
+        path: "**/build/outputs/apk/debug/*.apk"
         
