@@ -25,22 +25,21 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Build APK with Gradle
+    - name: Install Gradle & Build APK
       run: |
         cd extracted_project
         PROJECT_DIR=$(find . -name "build.gradle" -o -name "build.gradle.kts" -maxdepth 3 | xargs dirname | head -n 1)
         echo "Found project directory: $PROJECT_DIR"
         cd "$PROJECT_DIR"
         
-        # গ্রেডল র‍্যাপার না থাকলে সরাসরি gradle ইনস্টল করে বিল্ড করবে
-        if [ ! -f "gradlew" ]; then
-          echo "gradlew not found, installing gradle..."
-          sudo apt-get update && sudo apt-get install -y gradle
-          gradle assembleDebug
-        else
-          chmod +x gradlew
-          ./gradlew assembleDebug
-        fi
+        # gradlew ফাইল বা ফোল্ডার রিমুভ করে দিয়ে সরাসরি গিটহাবের গ্রেডল ইনস্টল করাচ্ছি
+        rm -rf gradlew gradle/wrapper
+        
+        echo "Installing Gradle..."
+        sudo apt-get update && sudo apt-get install -y gradle
+        
+        echo "Building APK using system Gradle..."
+        gradle assembleDebug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
