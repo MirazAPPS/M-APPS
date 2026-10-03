@@ -18,7 +18,6 @@ jobs:
         mkdir -p extracted_project
         unzip -q m-apps.zip -d extracted_project
         
-        # প্রজেক্ট ফোল্ডারের ভেতরের ত্রুটিপূর্ণ গ্রেডল র‍্যাপার ফাইলগুলো সাথে সাথে মুছে ফেলছি
         find extracted_project -name "gradlew" -delete
         find extracted_project -type d -name "wrapper" -exec rm -rf {} +
 
@@ -38,14 +37,9 @@ jobs:
         echo "Found project directory: $PROJECT_DIR"
         cd "$PROJECT_DIR"
         
-        # নতুন করে সঠিক গ্রেডল র‍্যাপার ইনিট ও পারমিশন দিয়ে বিল্ড শুরু করছি
         gradle wrapper
         chmod +x gradlew
-        ./gradlew assembleDebug
-
-    - name: Upload APK Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: napps-telecom-apk
-        path: "**/build/outputs/apk/debug/*.apk"
+        
+        # ডিপেন্ডেন্সি রেজোলিউশন ত্রুটি এড়াতে অতিরিক্ত জেভিএম অপশনসহ বিল্ড রান করছি
+        ./gradlew assembleDebug -Dorg.gradle.project.android.aapt2FromMavenOverride=""
         
