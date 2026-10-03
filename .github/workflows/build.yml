@@ -17,7 +17,10 @@ jobs:
         echo "Extracting m-apps.zip..."
         mkdir -p extracted_project
         unzip -q m-apps.zip -d extracted_project
-        ls -la extracted_project
+        
+        # প্রজেক্ট ফোল্ডারের ভেতরের ত্রুটিপূর্ণ গ্রেডল র‍্যাপার ফাইলগুলো সাথে সাথে মুছে ফেলছি
+        find extracted_project -name "gradlew" -delete
+        find extracted_project -type d -name "wrapper" -exec rm -rf {} +
 
     - name: Set up JDK
       uses: actions/setup-java@v4
@@ -35,11 +38,8 @@ jobs:
         echo "Found project directory: $PROJECT_DIR"
         cd "$PROJECT_DIR"
         
-        # যদি gradlew না থাকে তবে প্রজেক্টের ভেতরে নতুন র‍্যাপার ইনিট করে নেব
-        if [ ! -f "gradlew" ]; then
-          gradle wrapper
-        fi
-        
+        # নতুন করে সঠিক গ্রেডল র‍্যাপার ইনিট ও পারমিশন দিয়ে বিল্ড শুরু করছি
+        gradle wrapper
         chmod +x gradlew
         ./gradlew assembleDebug
 
