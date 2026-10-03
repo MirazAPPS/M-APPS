@@ -30,15 +30,15 @@ jobs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
 
-    - name: Build APK with Compatible Gradle
+    - name: Build APK with Gradle 8.2
       run: |
         cd extracted_project
         PROJECT_DIR=$(find . -name "build.gradle" -o -name "build.gradle.kts" -maxdepth 3 | xargs dirname | head -n 1)
         echo "Found project directory: $PROJECT_DIR"
         cd "$PROJECT_DIR"
         
-        # গ্রেডল ৭.৫ ভার্সন র‍্যাপার জেনারেট করছি যা ত্রুটিমুক্তভাবে বিল্ড করবে
-        gradle wrapper --gradle-version 7.5
+        # প্রজেক্টের চাহিদা অনুযায়ী Gradle 8.2 র‍্যাপার তৈরি করে নিচ্ছি
+        gradle wrapper --gradle-version 8.2
         chmod +x gradlew
         ./gradlew assembleDebug
 
