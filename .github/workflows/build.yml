@@ -30,16 +30,21 @@ jobs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
 
-    - name: Build APK with Gradle Wrapper
+    - name: Build APK with Compatible Gradle
       run: |
         cd extracted_project
         PROJECT_DIR=$(find . -name "build.gradle" -o -name "build.gradle.kts" -maxdepth 3 | xargs dirname | head -n 1)
         echo "Found project directory: $PROJECT_DIR"
         cd "$PROJECT_DIR"
         
-        gradle wrapper
+        # গ্রেডল ৭.৫ ভার্সন র‍্যাপার জেনারেট করছি যা ত্রুটিমুক্তভাবে বিল্ড করবে
+        gradle wrapper --gradle-version 7.5
         chmod +x gradlew
-        
-        # ডিপেন্ডেন্সি রেজোলিউশন ত্রুটি এড়াতে অতিরিক্ত জেভিএম অপশনসহ বিল্ড রান করছি
-        ./gradlew assembleDebug -Dorg.gradle.project.android.aapt2FromMavenOverride=""
+        ./gradlew assembleDebug
+
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: napps-telecom-apk
+        path: "**/build/outputs/apk/debug/*.apk"
         
